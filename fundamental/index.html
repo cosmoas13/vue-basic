@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+  <div id="app" class="container">
+    <div class="row">
+      <div class="col">
+        <h1>Participant</h1>
+        <form action="" @submit.prevent="onSubmit">
+          <label for="name">Fullname</label><br>
+          <input type="text" v-model="data.name"><br><br>
+          <label for="age">Age</label><br>
+          <input type="number" v-model="data.age"><br><br>
+          <label for="city">City</label><br>
+          <select name="options" id="options" v-model="data.city">
+            <option value="1">Palembang</option>
+            <option value="2">Bandung</option>
+            <option value="3">Jakarta</option>
+          </select><br><br>
+          <label for="gender">Gender</label><br>
+          <input type="radio" v-model="data.gender" value="1"/>Male<br>
+          <input type="radio" v-model="data.gender" value="2"/>Female<br><br>
+          <label for="address">Address</label><br>
+          <textarea name="address" id="address" v-model="data.address" cols="30" rows="10"></textarea>
+          <br>
+          <br>
+          <input type="submit" value="send">
+        </form>
+      </div>
+      <div class="col">  
+        <button type="button" @click="output = !output">
+          {{ output ? 'Hide' : 'Show' }} Output
+        </button>
+        <table>
+          <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>City</th>
+            <th>Gender</th>
+            <th>Address</th>
+            <th>Action</th>
+          </tr>
+          <tr v-for="(item, index) in dataArray">
+            <td>{{index + 1}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.age}}</td>
+            <td>{{handleCity(item.city)}}</td>
+            <td>{{handleGender(item.gender)}}</td>
+            <td>{{item.address}}</td>
+            <td>
+              <button @click="detailData(item)" type="button">Detail</button>
+            </td>
+          </tr>
+        </table>
+  
+        <h4>Number of Participant {{dataArray.length}}</h4>
+        <h5>{{handleEvenOdd}}</h5>
+
+        <div v-show="output">
+          BERHASIL MENGGUNAKAN V-SHOW
+        </div>
+
+        <!-- box -->
+         <div class="card" v-show="showDetail" :class="data.gender == 1 ? 'bg-blue' : 'bg-pink'">
+            <h1 class="center" :style="data.gender == 1 ? 'color:blue;' : 'color:white;' ">
+              {{data.name}}
+            </h1>
+            <table>
+              <tr>
+                <td>Age</td>
+                <td>:</td>
+                <td>{{data.age}} Year</td>
+              </tr>
+              <tr>
+                <td>City</td>
+                <td>:</td>
+                <td>{{handleCity(data.city)}}</td>
+              </tr>
+              <tr>
+                <td>Gender</td>
+                <td>:</td>
+                <td>{{handleGender(data.gender)}}</td>
+              </tr>
+              <tr>
+                <td>Address</td>
+                <td>:</td>
+                <td>{{data.address}}</td>
+              </tr>
+            </table>
+            <button type="button" @click="closeDetail">Close</button>
+         </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .container {
+      padding: 50px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 20px 40px;
+    }
+    .col {
+      background-color: aliceblue;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    table {
+      border-collapse: collapse;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    th,td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .card {
+      border: 2px solid gray;
+      border-radius: 20px;
+      padding: 30px;
+      margin: 10px 30px;
+    }
+    .center {
+      text-align: center;
+    }
+    .bg-blue{
+      background-color: lightblue;
+    }
+    .bg-pink{
+      background-color: lightpink;
+    }
+  </style>
+
+  <script>
+    const { createApp, ref, reactive, computed } = Vue
+
+    createApp({
+      setup() {
+        const data = reactive({
+          name: '',
+          age: 0,
+          city: '',
+          gender: '',
+          address: '',
+        });
+        const output = ref(false);
+        const showDetail = ref(false);
+        const dataArray = ref([
+          {
+            name: 'John Doe',
+            age: 20,
+            city: 1,
+            gender: 1,
+            address: 'Jl. Palembang',
+          },
+          {
+            name: 'Jane Doe',
+            age: 22,
+            city: 2,
+            gender: 2,
+            address: 'Jl. Bandung',
+          },
+          {
+            name: 'Albert Budi',
+            age: 20,
+            city: 3,
+            gender: 1,
+            address: 'Jl. Jendral Sudirman'
+          }
+        ]);
+
+        const onSubmit = () => {
+          dataArray.value.push({
+            name: data.name,
+            age: data.age,
+            city: data.city,
+            address: data.address,
+            gender: data.gender
+          });
+          clearInput();
+        };
+
+        const clearInput = () => {
+          data.name = "";
+          data.age = 0;
+          data.city = "";
+          data.address = "";
+          data.gender = "";
+        }
+
+        const handleEvenOdd = computed(() => {
+          if (dataArray.value.length % 2 == 0) {
+            return "Even";
+          } else {
+            return "Odd";
+          }
+        });
+
+        const handleGender = (item) => {
+          if (item === 1) {
+            return "Male";
+          } else {
+            return "Female";
+          }
+        };
+
+        const handleCity = (item) => {
+          if (item === 1) {
+            return "Palembang";
+          } else if (item === 2) {
+            return "Bandung";
+          } else {
+            return "Jakarta";
+          }
+        }
+
+        const detailData = (item) => {
+          showDetail.value = true;
+          data.name = item.name;
+          data.age = item.age;
+          data.address = item.address;
+          data.city = item.city;
+          data.gender = item.gender;
+        }
+
+        const closeDetail = () => {
+          clearInput();
+          showDetail.value = false;
+        }
+
+        return {
+          data,
+          output,
+          dataArray,
+          onSubmit,
+          handleEvenOdd,
+          handleGender,
+          handleCity,
+          detailData,
+          closeDetail,
+          showDetail
+        };
+      },
+    }).mount('#app')
+  </script>
+</body>
+</html>
