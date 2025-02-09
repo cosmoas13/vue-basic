@@ -1,0 +1,14 @@
+# Node.js
+client-side/node_modules/
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# System files
+.DS_Store
+
+# Folder atau file dalam 'client' yang ingin diabaikan
+client-side/temp/
+client-side/*.backup
